@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import cnn_lstm.utils as util
+import utils as util
 import re
 
 # score initialization
