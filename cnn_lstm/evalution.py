@@ -24,7 +24,7 @@ valid_len = util.valid_end_id - util.valid_start_id
 # compute the threshold, threshold = alpha * max{s(t)} , s(t) is the anomaly scores over validation period.
 for i in range(util.valid_end_id - util.valid_start_id):
 	error = np.square(np.subtract(test_data[i, ..., 0], reconstructed_data[i, ..., 0]))
-	num_anom = np.count_nonzero(error > util.threhold)
+	num_anom = len(np.where(error > util.threhold))
 	valid_anomaly_score[i] = num_anom
 
 max_valid_anom = np.max(valid_anomaly_score)
@@ -37,14 +37,13 @@ print("Threshold is %.2f" % threshold)
 for i in range(util.test_end_id - util.valid_end_id):
 	error = np.square(np.subtract(test_data[i, ..., 0], reconstructed_data[i, ..., 0]))
  
-	num_anom = np.count_nonzero(error >  0.6)
+	num_anom = len(np.where(error > threshold)) # 배열에서 가져와서 무조건 2
+												# np.count_nonzero(error >=  0.99) 이렇게 하면 갯수를 찾긴하지만 이게 맞나..?
 	
  	
   
 	test_anomaly_score[i - valid_len] = num_anom
-	print("num_anom",num_anom)
-max_test_anom = np.max(test_anomaly_score)
-print("max_test_anom",max_test_anom)
+	
 	
 
 # plot anomaly score curve and identification result
