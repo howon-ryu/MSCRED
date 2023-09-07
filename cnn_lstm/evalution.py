@@ -24,7 +24,7 @@ valid_len = util.valid_end_id - util.valid_start_id
 # compute the threshold, threshold = alpha * max{s(t)} , s(t) is the anomaly scores over validation period.
 for i in range(util.valid_end_id - util.valid_start_id):
 	error = np.square(np.subtract(test_data[i, ..., 0], reconstructed_data[i, ..., 0]))
-	num_anom = len(np.where(error > util.threhold))
+	num_anom = np.count_nonzero(error > util.threhold)
 	valid_anomaly_score[i] = num_anom
 
 max_valid_anom = np.max(valid_anomaly_score)
@@ -36,8 +36,16 @@ print("Threshold is %.2f" % threshold)
 # compute the anomaly score in the test data.
 for i in range(util.test_end_id - util.valid_end_id):
 	error = np.square(np.subtract(test_data[i, ..., 0], reconstructed_data[i, ..., 0]))
-	num_anom = len(np.where(error > threshold))
+ 
+	num_anom = np.count_nonzero(error >  0.6)
+	
+ 	
+  
 	test_anomaly_score[i - valid_len] = num_anom
+	print("num_anom",num_anom)
+max_test_anom = np.max(test_anomaly_score)
+print("max_test_anom",max_test_anom)
+	
 
 # plot anomaly score curve and identification result
 anomaly_pos = np.zeros(5)
@@ -46,7 +54,7 @@ anomaly_span = [10, 30, 90]
 
 # Read the test_anomaly.csv, each line behalf of an anomaly, the first is the position, the next three number is the
 # root cause.
-root_cause_f = open("../data/test_anomaly.csv", "r")
+root_cause_f = open(r"D:\MSCRED\data\test_anomaly.csv", "r")
 
 root_cause_gt = np.loadtxt(root_cause_f, delimiter=",", dtype=np.int32)
 anomaly_pos = root_cause_gt[:, 0]
