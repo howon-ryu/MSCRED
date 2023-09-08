@@ -76,12 +76,12 @@ class SignatureMatrices:
         print("train dataset shape is", train_dataset.shape)
         print("test dataset shape is", test_dataset.shape)
 
-        train_path = "../data/train/"
+        train_path = "D:/MSCRED/data/train/"
         if not os.path.exists(train_path):
             os.makedirs(train_path)
         train_path = train_path + "train.npy"
 
-        test_path = "../data/test/"
+        test_path = "D:/MSCRED/data/test/"
         if not os.path.exists(test_path):
             os.makedirs(test_path)
         test_path = test_path + "test.npy"

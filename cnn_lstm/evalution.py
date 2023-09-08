@@ -24,7 +24,8 @@ valid_len = util.valid_end_id - util.valid_start_id
 # compute the threshold, threshold = alpha * max{s(t)} , s(t) is the anomaly scores over validation period.
 for i in range(util.valid_end_id - util.valid_start_id):
 	error = np.square(np.subtract(test_data[i, ..., 0], reconstructed_data[i, ..., 0]))
-	num_anom = len(np.where(error > util.threhold))
+	#num_anom = len(np.where(error > util.threhold))
+	num_anom = (np.sum(error > util.threhold))
 	valid_anomaly_score[i] = num_anom
 
 max_valid_anom = np.max(valid_anomaly_score)
@@ -37,11 +38,11 @@ print("Threshold is %.2f" % threshold)
 for i in range(util.test_end_id - util.valid_end_id):
 	error = np.square(np.subtract(test_data[i, ..., 0], reconstructed_data[i, ..., 0]))
  
-	num_anom = len(np.where(error > threshold)) # 배열에서 가져와서 무조건 2
+	#num_anom = len(np.where(error > threshold)) # 배열에서 가져와서 무조건 2
 												# np.count_nonzero(error >=  0.99) 이렇게 하면 갯수를 찾긴하지만 이게 맞나..?
-	
- 	
-  
+	#num_anom = np.count_nonzero(error >=  1.0)
+	num_anom = (np.sum(error > util.threhold))
+	print("num_anom",num_anom)
 	test_anomaly_score[i - valid_len] = num_anom
 	
 	
@@ -61,12 +62,12 @@ anomaly_pos = [(anomaly_pos[i]/util.gap_time-util.test_start_id-anomaly_span[i %
 for i in range(5):
 	root_cause_gt[i][0] = anomaly_pos[i]
 
-
+print("anomaly_pos",anomaly_pos)
 fig, axes = plt.subplots()
 test_num = util.test_end_id - util.test_start_id
 plt.xticks(fontsize = 25)
-plt.ylim((0, 100))
-plt.yticks(np.arange(0, 101, 20), fontsize = 25)
+plt.ylim((0, 1500))
+plt.yticks(np.arange(0, 1501, 100), fontsize = 25)
 plt.plot(test_anomaly_score, 'b', linewidth = 2)
 threshold = np.full((test_num), max_valid_anom * util.alpha)
 axes.plot(threshold, color = 'black', linestyle = '--',linewidth = 2)

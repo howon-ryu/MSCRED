@@ -45,20 +45,24 @@ def cnn_encoder(data):
     return cnn1_out, cnn2_out, cnn3_out, cnn4_out
 
 def cnn_lstm_attention_layer(input_data, layer_number):
+    
+    #미리 padding 추가
+    
     print("inputshape",input_data.shape)
     convlstm_layer = tf.keras.layers.ConvLSTM2D(
         filters=input_data.shape[-1],
         kernel_size=(2, 2),
         use_bias=True,
         return_sequences=True,
+        padding="same",
         name="conv_lstm_cell" + str(layer_number))
 
     outputs = convlstm_layer(input_data)
     print("outputsshape", outputs.shape)
     
     # Add padding to match the target shape (1, 5, 30, 30, 32)
-    padding = tf.constant([[0, 0], [0, 0], [0, 1], [0, 1], [0, 0]])
-    outputs = tf.pad(outputs, padding, "CONSTANT")
+    # padding = tf.constant([[0, 0], [0, 0], [0, 1], [0, 1], [0, 0]])
+    # outputs = tf.pad(outputs, padding, "CONSTANT")
 
     # attention based on inner-product between feature representation of last step and other steps
     attention_w = []
@@ -67,7 +71,7 @@ def cnn_lstm_attention_layer(input_data, layer_number):
     attention_w = tf.reshape(tf.nn.softmax(tf.stack(attention_w)), [1, util.step_max])
 
     outputs = tf.reshape(outputs, [util.step_max, -1])
-    print("outputsshape3",outputs.shape)
+    #print("outputsshape3",outputs.shape)
     outputs = tf.matmul(attention_w, outputs)
     outputs = tf.reshape(outputs, [1, input_data.shape[2], input_data.shape[3], input_data.shape[4]])
 
